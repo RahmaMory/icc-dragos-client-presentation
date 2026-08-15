@@ -38,7 +38,7 @@ mainDemo: {
   description:
     "A tailored digital experience is currently being prepared for Drago's.",
   url: "",
-  image: "/assets/projects/la-rotunda.jpg",
+  image: "/assets/projects/dragos.png",
 },
 
   related: [

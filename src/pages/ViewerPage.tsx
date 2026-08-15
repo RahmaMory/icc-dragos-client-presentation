@@ -64,10 +64,12 @@
 // }
 
 
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Clock3,
   FileText,
+  LoaderCircle,
   MessageCircle,
   Sparkles,
 } from "lucide-react";
@@ -77,9 +79,25 @@ import { client } from "../data/client";
 
 export default function ViewerPage() {
   const location = useLocation();
+  const pathname = location.pathname;
 
-  const isProposal = location.pathname.includes("/view/proposal");
-  const isDemo = location.pathname.includes("/view/demo");
+  const [frameLoaded, setFrameLoaded] = useState(false);
+
+  const isProposal = pathname === "/view/proposal";
+  const isDemo = pathname === "/view/demo";
+  const isProject = pathname.startsWith("/view/project/");
+
+  const projectId = isProject
+    ? decodeURIComponent(pathname.replace("/view/project/", ""))
+    : "";
+
+  const relatedProject = isProject
+    ? client.related.find((project) => project.id === projectId)
+    : undefined;
+
+  useEffect(() => {
+    setFrameLoaded(false);
+  }, [pathname]);
 
   const whatsappMessage = encodeURIComponent(
     `Hello ICC, I would like to know more about the ${client.clientName} project.`
@@ -90,6 +108,7 @@ export default function ViewerPage() {
   /* ================================
      PROPOSAL — COMING SOON
   ================================= */
+
   if (isProposal) {
     return (
       <div className="viewer-page unavailable-viewer">
@@ -153,8 +172,9 @@ export default function ViewerPage() {
   }
 
   /* ================================
-     DEMO — COMING SOON
+     DRAGO'S DEMO — COMING SOON
   ================================= */
+
   if (isDemo) {
     return (
       <div className="viewer-page unavailable-viewer">
@@ -210,8 +230,64 @@ export default function ViewerPage() {
   }
 
   /* ================================
+     RELATED PROJECTS — NORMAL VIEWER
+  ================================= */
+
+  if (isProject && relatedProject) {
+    return (
+      <div className="viewer-page">
+        <div className="viewer-toolbar">
+          <Link to="/related" className="back-link">
+            <ArrowLeft size={16} />
+            <span>Back to related projects</span>
+          </Link>
+
+          <div className="viewer-title">
+            <small>{relatedProject.category}</small>
+            <strong>{relatedProject.title}</strong>
+          </div>
+
+          <a
+            href={relatedProject.url}
+            target="_blank"
+            rel="noreferrer"
+            className="external-button"
+          >
+            Open externally
+          </a>
+        </div>
+
+        <div className="viewer-frame-wrap">
+          {!frameLoaded && (
+            <div className="viewer-loader">
+              <LoaderCircle className="spin" size={28} />
+
+              <span>
+                Loading {relatedProject.title}...
+              </span>
+            </div>
+          )}
+
+          <iframe
+            src={relatedProject.url}
+            title={`${relatedProject.title} website`}
+            className={frameLoaded ? "is-loaded" : ""}
+            onLoad={() => setFrameLoaded(true)}
+            allow="fullscreen"
+          />
+        </div>
+
+        <p className="iframe-note">
+          You are viewing {relatedProject.title} inside the ICC presentation.
+        </p>
+      </div>
+    );
+  }
+
+  /* ================================
      FALLBACK
   ================================= */
+
   return (
     <div className="viewer-page unavailable-viewer">
       <div className="pending-experience">
@@ -219,7 +295,15 @@ export default function ViewerPage() {
           <Sparkles size={30} />
         </div>
 
+        <p className="pending-kicker">
+          ICC • CLIENT EXPERIENCE
+        </p>
+
         <h1>Experience unavailable.</h1>
+
+        <p className="pending-description">
+          This experience could not be found.
+        </p>
 
         <Link to="/" className="pending-primary-action">
           <ArrowLeft size={18} />
