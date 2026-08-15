@@ -16,9 +16,9 @@ function RoutedApp() {
         <Routes location={location}>
           <Route path="/" element={<HomePage />} />
           <Route path="/related" element={<RelatedPage />} />
-          <Route path="/view/proposal" element={<ViewerPage mode="proposal" />} />
-          <Route path="/view/demo" element={<ViewerPage mode="demo" />} />
-          <Route path="/view/project/:projectId" element={<ViewerPage mode="project" />} />
+          <Route path="/view/proposal" element={<ViewerPage />} />
+<Route path="/view/demo" element={<ViewerPage />} />
+<Route path="/view/project/:projectId" element={<ViewerPage />} />
           <Route path="/privacy" element={<LegalPage type="privacy" />} />
           <Route path="/terms" element={<LegalPage type="terms" />} />
           <Route path="*" element={<NotFoundPage />} />
